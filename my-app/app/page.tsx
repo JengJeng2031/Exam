@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { useRouter } from 'next/navigation';
 
 interface Prefix {
   id: number;
@@ -23,16 +24,25 @@ const MyH1: React.FC = () => {
   const [editStatus, setEditStatus] = useState<string>("");
 
   const [error, setError] = useState<string>("");
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!localStorage.getItem('authToken')) {
+      router.push('/login'); // Redirect to login if not authenticated
+    } else {
+      getData();
+    }
+  }, []);
 
   async function getData() {
     setLoading(true);
-    setError("");
+    setError('');
     try {
-      const result = await axios.get("https://66e3d100d2405277ed11ef3e.mockapi.io/api/todo");
+      const result = await axios.get('https://66e3d100d2405277ed11ef3e.mockapi.io/api/todo');
       setData(result.data);
     } catch (e) {
       console.error(e);
-      setError("Failed to fetch data. Please try again later.");
+      setError('Failed to fetch data. Please try again later.');
     } finally {
       setLoading(false);
     }
